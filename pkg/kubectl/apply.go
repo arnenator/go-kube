@@ -42,6 +42,28 @@ type applyOptions struct {
 	IsKustomization bool `default:"false"`
 }
 
+/*
+ApplyManifests applies the given files to the cluster that the kubeconfigPath points to with the given ApplyManifestsOptions.
+
+Example:
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := ApplyManifests(
+		ctx,
+		"/path/to/kubeconfig",
+		&ApplyManifestsOptions{
+		},
+		[]string{
+			"/path/to/manifest1.yaml",
+			"/path/to/manifest2.yaml",
+		},
+	)
+	if err != nil {
+		// Handle error
+	}
+*/
 func ApplyManifests(ctx context.Context, kubeconfigPath string, opts *ApplyManifestsOptions, filePaths []string) error {
 	// Translate ApplyManifestsOptions to ApplyOptions
 	applyOpts := &applyOptions{
@@ -53,6 +75,27 @@ func ApplyManifests(ctx context.Context, kubeconfigPath string, opts *ApplyManif
 	return applyFunc(ctx, kubeconfigPath, applyOpts, filePaths)
 }
 
+/*
+ApplyKustomization applies the given files to the cluster that the kubeconfigPath points to with the given ApplyKustomizationOptions.
+
+Example:
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := ApplyKustomization(
+		ctx,
+		"/path/to/kubeconfig",
+		&ApplyKustomizationOptions{
+		},
+		[]string{
+			"/path/to/kustomization",
+		},
+	)
+	if err != nil {
+		// Handle error
+	}
+*/
 func ApplyKustomization(ctx context.Context, kubeconfigPath string, opts *ApplyKustomizationOptions, filePaths []string) error {
 	// Translate ApplyKustomizationOptions to ApplyOptions
 	applyOpts := &applyOptions{
