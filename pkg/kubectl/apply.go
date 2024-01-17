@@ -21,13 +21,15 @@ var (
 )
 
 type ApplyManifestsOptions struct {
-	DryRun    bool `default:"false"`
-	Recursive bool `default:"false"`
+	// FIXME: When dry-run is working, we should add it here
+	// DryRun    DryRunType
+	Recursive bool
 }
 
 type ApplyKustomizationOptions struct {
-	DryRun    bool `default:"false"`
-	Recursive bool `default:"false"`
+	// FIXME: When dry-run is working, we should add it here
+	// DryRun    DryRunType
+	Recursive bool
 }
 
 /*
@@ -37,7 +39,7 @@ type applyOptions struct {
 	/*
 		Runs a dry-run on all resources. This is the server-side dry-run i.e. kubectl apply --dry-run=server
 	*/
-	DryRun          bool `default:"false"`
+	DryRun          DryRunType
 	Recursive       bool `default:"false"`
 	IsKustomization bool `default:"false"`
 }
@@ -64,15 +66,14 @@ Example:
 		// Handle error
 	}
 */
-func ApplyManifests(ctx context.Context, kubeconfigPath string, opts *ApplyManifestsOptions, filePaths []string) error {
+func ApplyManifests(ctx context.Context, kubeconfigPath string, opts *ApplyManifestsOptions, filePaths ...string) error {
 	// Translate ApplyManifestsOptions to ApplyOptions
 	applyOpts := &applyOptions{
-		DryRun:          opts.DryRun,
 		Recursive:       opts.Recursive,
 		IsKustomization: false,
 	}
 
-	return applyFunc(ctx, kubeconfigPath, applyOpts, filePaths)
+	return applyFunc(ctx, kubeconfigPath, applyOpts, filePaths...)
 }
 
 /*
@@ -96,21 +97,20 @@ Example:
 		// Handle error
 	}
 */
-func ApplyKustomization(ctx context.Context, kubeconfigPath string, opts *ApplyKustomizationOptions, filePaths []string) error {
+func ApplyKustomization(ctx context.Context, kubeconfigPath string, opts *ApplyKustomizationOptions, filePaths ...string) error {
 	// Translate ApplyKustomizationOptions to ApplyOptions
 	applyOpts := &applyOptions{
-		DryRun:          opts.DryRun,
 		Recursive:       opts.Recursive,
 		IsKustomization: true,
 	}
 
-	return applyFunc(ctx, kubeconfigPath, applyOpts, filePaths)
+	return applyFunc(ctx, kubeconfigPath, applyOpts, filePaths...)
 }
 
 /*
 Apply applies the given files to the cluster that the kubeconfigPath points to with the given ApplyOptions.
 */
-func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, filePaths []string) error {
+func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, filePaths ...string) error {
 	// We lock the mutex as we need to change the global behaviour when
 	// the `kubectl apply` function encounters a fatal error
 	applyMutex.Lock()
@@ -180,9 +180,8 @@ func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, f
 	applyCmd := apply.NewCmdApply("kubectl", f, ioStreams)
 	applyCmd.Flags().Set("request-timeout", fmt.Sprint(int(timeLeft.Seconds())))
 
-	if opts.DryRun {
-		applyCmd.Flags().Set("dry-run", "server")
-	}
+	// FIXME: setting dry-run to anything doesn't really work
+	applyCmd.Flags().Set("dry-run", DryRunNone.String())
 
 	if opts.Recursive {
 		applyCmd.Flags().Set("recursive", "true")
