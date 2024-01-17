@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -13,6 +14,10 @@ import (
 	"k8s.io/kubectl/pkg/cmd/util"
 
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
+)
+
+var (
+	applyMutex = &sync.Mutex{}
 )
 
 type ApplyManifestsOptions struct {
@@ -63,6 +68,11 @@ func ApplyKustomization(ctx context.Context, kubeconfigPath string, opts *ApplyK
 Apply applies the given files to the cluster that the kubeconfigPath points to with the given ApplyOptions.
 */
 func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, filePaths []string) error {
+	// We lock the mutex as we need to change the global behaviour when
+	// the `kubectl apply` function encounters a fatal error
+	applyMutex.Lock()
+	defer applyMutex.Unlock()
+
 	if kubeconfigPath == "" {
 		return fmt.Errorf("kubeconfig path cannot be empty")
 	}
