@@ -46,7 +46,7 @@ func deleteFunc(ctx context.Context, kubeconfigPath string, opts *deleteOptions,
 	}
 
 	if len(filePaths) == 0 {
-		return fmt.Errorf("no files to apply")
+		return fmt.Errorf("no files to delete")
 	}
 
 	ioStreams, streamOut, _, streamErr := genericiooptions.NewTestIOStreams()
@@ -98,7 +98,7 @@ func deleteFunc(ctx context.Context, kubeconfigPath string, opts *deleteOptions,
 	}
 
 	go func() {
-		// applyCmd is blocking. Should it fail it should have called the fatal error handler which
+		// deleteCmd is blocking. Should it fail it should have called the fatal error handler which
 		// we override earlier to send an error to errChan
 		deleteCmd.Run(createCmd, []string{})
 		errChan <- nil
