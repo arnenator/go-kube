@@ -15,6 +15,7 @@ import (
 	"sigs.k8s.io/kind/pkg/log"
 )
 
+// EphemeralCluster is a wrapper around a Kind kubernetes cluster
 type EphemeralCluster struct {
 	nodeImage   string `default:"kindest/node"`
 	nodeVersion string `default:"v1.26.2"`
@@ -28,11 +29,68 @@ type EphemeralCluster struct {
 	dynamicClient      *dynamic.DynamicClient
 }
 
+// GenericCluster is a wrapper around a kubernetes clientset and a kubeconfig file.
+type GenericCluster struct {
+	clientset          *kubernetes.Clientset
+	kubeConfigFilePath string
+	provider           *cluster.Provider
+	restConfig         *rest.Config
+	dynamicClient      *dynamic.DynamicClient
+}
+
+/*
+NewExistingCluster creates a new GenericCluster from an existing kubeconfig file.
+
+Example:
+
+	c, err := resources.NewExistingCluster("/Users/billy.bob/path/to/kubeconfig")
+	require.NoError(t, err)
+*/
+func NewExistingCluster(kubeconfig string) (*GenericCluster, error) {
+	gc := &GenericCluster{}
+
+	restConfig, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if err != nil {
+		return nil, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrapf(
+			err,
+			"could not create clientset for generic cluster",
+		)
+	}
+
+	dynamicClient, err := dynamic.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrapf(
+			err,
+			"could not create dynamic client for generic cluster",
+		)
+	}
+
+	gc.restConfig = restConfig
+	gc.clientset = clientset
+	gc.dynamicClient = dynamicClient
+	gc.kubeConfigFilePath = kubeconfig
+
+	return gc, nil
+}
+
 func NewEphemeralCluster() *EphemeralCluster {
 	return &EphemeralCluster{
 		nodeImage:   "kindest/node",
 		nodeVersion: "v1.26.2",
 	}
+}
+
+func (gc *GenericCluster) Client() *kubernetes.Clientset {
+	return gc.clientset
+}
+
+func (gc *GenericCluster) KubeConfigFilePath() string {
+	return gc.kubeConfigFilePath
 }
 
 func (ec *EphemeralCluster) image() string {
