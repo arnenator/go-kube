@@ -23,11 +23,16 @@ type deleteOptions struct {
 	IsKustomization bool `default:"false"`
 }
 
-func DeleteManifests(ctx context.Context, kubeconfigPath string, opts *deleteOptions, filePaths ...string) error {
+func DeleteManifests(ctx context.Context, kubeconfigPath string, filePaths ...string) error {
+
+	opts := &deleteOptions{}
+
 	return deleteFunc(ctx, kubeconfigPath, opts, filePaths...)
 }
 
-func DeleteKustomization(ctx context.Context, kubeconfigPath string, opts *deleteOptions, filePaths ...string) error {
+func DeleteKustomization(ctx context.Context, kubeconfigPath string, filePaths ...string) error {
+
+	opts := &deleteOptions{}
 	opts.IsKustomization = true // Force IsKustomization to true
 
 	return deleteFunc(ctx, kubeconfigPath, opts, filePaths...)
