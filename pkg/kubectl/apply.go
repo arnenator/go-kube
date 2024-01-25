@@ -12,8 +12,6 @@ import (
 	"k8s.io/kubectl/pkg/cmd/apply"
 	"k8s.io/kubectl/pkg/cmd/create"
 	"k8s.io/kubectl/pkg/cmd/util"
-
-	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 )
 
 var (
@@ -138,7 +136,7 @@ func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, f
 		WithDiscoveryQPS(50.0)
 
 	config.KubeConfig = &kubeconfigPath
-	f := cmdutil.NewFactory(config)
+	f := util.NewFactory(config)
 
 	// We create a "parent" command for the apply command,
 	// for it to inherit flags from
@@ -165,11 +163,11 @@ func applyFunc(ctx context.Context, kubeconfigPath string, opts *applyOptions, f
 	// and exits with the given error code
 	util.BehaviorOnFatal(func(msg string, errCode int) {
 		err := fmt.Errorf(
-			"Fatal error: %s\nError code: %d\nOut stream: %s\nError stream: %s\n",
+			"fatal error: %s\nerror code: %d\nout stream: %s\nerror stream: %s\n",
 			msg,
 			errCode,
-			string(streamOut.Bytes()),
-			string(streamErr.Bytes()),
+			streamOut.String(),
+			streamErr.String(),
 		)
 		errChan <- err
 	})

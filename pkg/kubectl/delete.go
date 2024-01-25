@@ -12,7 +12,6 @@ import (
 	"k8s.io/kubectl/pkg/cmd/create"
 	"k8s.io/kubectl/pkg/cmd/delete"
 	"k8s.io/kubectl/pkg/cmd/util"
-	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 )
 
 var (
@@ -58,7 +57,7 @@ func deleteFunc(ctx context.Context, kubeconfigPath string, opts *deleteOptions,
 		WithDiscoveryQPS(50.0)
 
 	config.KubeConfig = &kubeconfigPath
-	f := cmdutil.NewFactory(config)
+	f := util.NewFactory(config)
 
 	errChan := make(chan error)
 
@@ -76,11 +75,11 @@ func deleteFunc(ctx context.Context, kubeconfigPath string, opts *deleteOptions,
 
 	util.BehaviorOnFatal(func(msg string, errCode int) {
 		err := fmt.Errorf(
-			"Fatal error: %s\nError code: %d\nOut stream: %s\nError stream: %s\n",
+			"fatal error: %s\nerror code: %d\nout stream: %s\nerror stream: %s\n",
 			msg,
 			errCode,
-			string(streamOut.Bytes()),
-			string(streamErr.Bytes()),
+			streamOut.String(),
+			streamErr.String(),
 		)
 		errChan <- err
 	})
