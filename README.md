@@ -15,7 +15,7 @@ go get github.com/Arneproductions/go-kube
 
 Now in order to use the functions you need to import the following package in your go file:
 ```go
-import github.com/Arneproductions/go-kube/pkg/kubectl
+import "github.com/Arneproductions/go-kube/pkg/kubectl"
 ```
 
 This lets you call the functions like the following:
