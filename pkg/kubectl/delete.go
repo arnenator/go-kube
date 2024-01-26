@@ -22,11 +22,52 @@ type deleteOptions struct {
 	IsKustomization bool `default:"false"`
 }
 
-func DeleteManifests(ctx context.Context, kubeconfigPath string, opts *deleteOptions, filePaths ...string) error {
+/*
+DeleteManifests deletes the resource created by the given manifest files from the cluster that the kubeconfigPath points to.
+
+Example:
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := DeleteManifests(
+		ctx,
+		"/path/to/kubeconfig",
+		[]string{"path/to/file1", "path/to/file2"}...
+	)
+
+	if err != nil {
+		// Handle error
+	}
+*/
+func DeleteManifests(ctx context.Context, kubeconfigPath string, filePaths ...string) error {
+
+	opts := &deleteOptions{}
+
 	return deleteFunc(ctx, kubeconfigPath, opts, filePaths...)
 }
 
-func DeleteKustomization(ctx context.Context, kubeconfigPath string, opts *deleteOptions, filePaths ...string) error {
+/*
+DeleteKustomization deletes the resources created by the given kustomization files from the cluster that the kubeconfigPath points to.
+
+Example:
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := DeleteKustomization(
+		ctx,
+		"/path/to/kubeconfig",
+		[]string{"path/to/kustomization1", "path/to/kustomization2"}...
+	)
+
+	if err != nil {
+		// Handle error
+	}
+*/
+func DeleteKustomization(ctx context.Context, kubeconfigPath string, filePaths ...string) error {
+
+	opts := &deleteOptions{}
 	opts.IsKustomization = true // Force IsKustomization to true
 
 	return deleteFunc(ctx, kubeconfigPath, opts, filePaths...)
