@@ -1,9 +1,12 @@
 # go-kube
+
+[![PkgGoDev][godev-img]][godev] [![CI][ci-img]][ci]
+
 go-kube is a wrapper over the kubectl commands such that we can have a nice interface that we can call from our go code.
 
 **Why is this repo created?**
 
-We (@andreaswachs and @Arneproductions) experienced many times while developing tools for Kubernetes that we were missing the ability to just call an apply or delete function that had the same behavior as Kubectl. We found ourselves, trying to implement the exact same logic as kubectl apply over and over again. This is of course a hassle, since we need to figure out how to create a specific resource or how to patch existing resources and choosing the correct patch method. 
+We ([@andreaswachs](https://github.com/andreaswachs/) and [@Arneproductions](https://github.com/Arneproductions)) experienced many times while developing tools for Kubernetes that we were missing the ability to just call an apply or delete function that had the same behavior as Kubectl. We found ourselves, trying to implement the exact same logic as kubectl apply over and over again. This is of course a hassle, since we need to figure out how to create a specific resource or how to patch existing resources and choosing the correct patch method. 
 
 So we asked ourself... why reinvent the wheel? Kubectl has some nice commands that does this for us. But the code around kubectl can be really cumbersome and hard to understand. So for that reason we have implemented this little tool that simplifies the interface for all us developers.
 
@@ -26,3 +29,9 @@ opts := kubectl.ApplyManifestsOptions{
 
 kubectl.ApplyManifests(ctx, pathToKubeconfig, opts, pathToManifests...)
 ```
+
+
+[godev-img]: https://pkg.go.dev/badge/github.com/Arneproductions/go-kube
+[godev]: https://pkg.go.dev/github.com/Arneproductions/go-kube
+[ci-img]: https://github.com/Arneproductions/go-kube/actions/workflows/go-build-and-test.yml/badge.svg
+[ci]: https://github.com/Arneproductions/go-kube/actions
