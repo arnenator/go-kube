@@ -34,4 +34,4 @@ kubectl.ApplyManifests(ctx, pathToKubeconfig, opts, pathToManifests...)
 [godev-img]: https://pkg.go.dev/badge/github.com/Arneproductions/go-kube
 [godev]: https://pkg.go.dev/github.com/Arneproductions/go-kube
 [ci-img]: https://github.com/Arneproductions/go-kube/actions/workflows/go-build-and-test.yml/badge.svg
-[ci]: https://github.com/Arneproductions/go-kube/actions
+[ci]: [https://github.com/Arneproductions/go-kube/actions](https://github.com/Arneproductions/go-kube/actions/workflows/go-build-and-test.yml)https://github.com/Arneproductions/go-kube/actions/workflows/go-build-and-test.yml
